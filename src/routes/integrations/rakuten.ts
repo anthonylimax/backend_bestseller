@@ -1,41 +1,10 @@
 import { Request, Response, Router } from "express";
-import MySql from "../db/mysql";
-import { Cache } from "./cache";
 import axios, { AxiosResponse } from "axios";
 
-export const setRoutes = (routes: Router) => {
-    routes.post('/verifycredentials', async (request: Request, response: Response) => {
-        try {
-            const db = new MySql();
-            const query = await db.verifycredentials(request.body);
-            const caching = Cache.cache;
-            let session = caching.InitializeTokenAcess(query);
-            response.send(session);
-        } catch (e) {
-            response.sendStatus(404);
-        }
-    });
-
-    routes.post('/verifyCache', async (request: Request, response: Response) => {
-        try {
-            const caching = Cache.cache;
-            let verifyCache = caching.verifyCache(request.body);
-            response.send(verifyCache);
-        } catch (e) {
-            response.status(500).send(`${e}`);
-        }
-    });
-
-    routes.delete('/deleteSession', (request: Request, response: Response) => {
-        const caching = Cache.cache;
-        caching.deleteSession(request.body);
-        response.sendStatus(200);
-    });
-
-
-
+export const rakutenApi = (routes: Router) => { 
     routes.post('/searchRakutenItems', async (request: Request, response: Response) => {
         try {
+            console.log("asaoksnao");
             const { applicationId, keyword, genreId, sort, minPrice, maxPrice, hits, page } = request.body;
 
             const rakutenApiEndpoint = 'https://app.rakuten.co.jp/services/api/IchibaItem/Search/20220601';
@@ -62,6 +31,43 @@ export const setRoutes = (routes: Router) => {
         } catch (error) {
             console.error(error);
             response.status(500).send("Erro interno no servidor");
+        }
+    });
+    routes.get('/rakuten/itemSearch', async (request: Request, response: Response) => {
+        console.log(request.body); 
+        try {
+        const { keyword, genreId, itemCode, shopCode } = request.body;
+            
+            // Rakuten API endpoint
+            const apiUrl = 'https://app.rakuten.co.jp/services/api/IchibaItem/Search/20220601';
+            const format = 'json';
+            const applicationId = '1050682487455494185';
+            let apiEndpoint = `${apiUrl}?format=${format}`;
+
+            if (keyword) {
+                apiEndpoint += `&keyword=${keyword}`;
+            }
+
+            if (genreId) {
+                apiEndpoint += `&genreId=${genreId}`;
+            }
+
+            if (itemCode) {
+                apiEndpoint += `&itemCode=${itemCode}`;
+            }
+
+            if (shopCode) {
+                apiEndpoint += `&shopCode=${shopCode}`;
+            }
+            apiEndpoint += `&applicationId=${applicationId}`;
+            console.log(apiEndpoint);
+            // Make the Rakuten API request
+            const rakutenApiResponse = await axios.get(apiEndpoint);
+
+            response.json(rakutenApiResponse.data);
+        } catch (error) {
+            console.error(error);
+            response.status(500).json({ error: 'Internal Server Error' });
         }
     });
     routes.post('/searchRakutenGenre', async (request: Request, response: Response) => {
