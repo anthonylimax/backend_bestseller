@@ -4,6 +4,9 @@ import { Cache } from "./cache";
 import axios from "axios";
 
 export const setRoutes = (routes: Router) => {
+    routes.get("/", (request: Request, response : Response)=>{
+        response.send("wellcome")
+    })
     routes.post('/verifycredentials', async (request: Request, response: Response) => {
         try {
             const db = new MySql();
