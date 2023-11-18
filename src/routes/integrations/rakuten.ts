@@ -2,9 +2,9 @@ import { Request, Response, Router } from "express";
 import axios, { AxiosResponse } from "axios";
 
 export const rakutenApi = (routes: Router) => { 
+
     routes.post('/searchRakutenItems', async (request: Request, response: Response) => {
         try {
-            console.log("asaoksnao");
             const { applicationId, keyword, genreId, sort, minPrice, maxPrice, hits, page } = request.body;
 
             const rakutenApiEndpoint = 'https://app.rakuten.co.jp/services/api/IchibaItem/Search/20220601';
@@ -33,7 +33,7 @@ export const rakutenApi = (routes: Router) => {
             response.status(500).send("Erro interno no servidor");
         }
     });
-    routes.get('/rakuten/itemSearch', async (request: Request, response: Response) => {
+    routes.post('/rakuten/itemSearch', async (request: Request, response: Response) => {
         console.log(request.body); 
         try {
         const { keyword, genreId, itemCode, shopCode } = request.body;

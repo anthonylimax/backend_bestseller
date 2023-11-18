@@ -1,16 +1,16 @@
 import { Request, Response, Router } from "express";
 import axios from "axios";
 
-export const setRoutes = (routes: Router) => {
+export const Wix = (routes: Router) => {
     routes.post('/getWixAccessToken', async (request: Request, response: Response) => {
         try {
             const { APP_ID, APP_SECRET, AUTH_CODE } = request.body;
-
+            console.log(APP_ID, APP_SECRET)
             const tokenData = {
                 grant_type: "authorization_code",
                 client_id: APP_ID,
                 client_secret: APP_SECRET,
-                code: AUTH_CODE,
+                code: AUTH_CODE,            
             };
 
             const headers = {
