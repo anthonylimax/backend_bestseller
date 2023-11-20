@@ -34,7 +34,7 @@ export class Cache {
             encryptedToken: encrypted
         };
     }
-    private DecryptToken(encryptedData : {encryptedToken : string, key: Buffer, iv: string}) : string {
+    DecryptToken(encryptedData : {encryptedToken : string, key: Buffer, iv: string}) : string {
         
         const algorithm = 'aes-256-cbc';
         const decipher = crypto.createDecipheriv(algorithm, Buffer.from(encryptedData.key), Buffer.from(encryptedData.iv, 'hex'));
@@ -64,18 +64,19 @@ export class Cache {
         return encryptedToken;
     }
     }
+    getToken(token : string) {
+        const ref = this.SessionCache.get(token);
+        return ref;
+    }
     deleteSession(CripKey : {iv: string, key: Buffer, encryptedToken : string}){
         let Uncripkey = this.DecryptToken(CripKey);
         this.SessionCache.del(Uncripkey);
 
     }
-    verifyCache(key: {iv: string, key: Buffer, encryptedToken : string}) {
-        console.log(this.SessionCache.data)
+    verifyCache(key: {iv: string, key: Buffer, encryptedToken : string}) : boolean{
         if(this.SessionCache.get(this.DecryptToken(key))){
             return true;
         }
-        else{
-            return false;
-        }
+        return false;
     }
 }
