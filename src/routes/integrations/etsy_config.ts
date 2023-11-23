@@ -2454,5 +2454,319 @@ export const setRoutes = (routes: Router) => {
             response.status(500).send("Não funcionou");
         }
     });
-    
+    routes.get('/getShopByOwnerUserId/:user_id', async (request: Request, response: Response) => {
+        try {
+            // Verifique se o token de acesso está disponível
+            if (!accessToken) {
+                response.status(401).send("Token de acesso não disponível. Realize a autenticação primeiro.");
+                return;
+            }
+
+            const { user_id } = request.params;
+
+            const etsyApiResponse = await axios.get(`https://openapi.etsy.com/v3/application/users/${user_id}/shops`, { headers: { 'Authorization': `Bearer ${accessToken}` } });
+
+            if (etsyApiResponse.status === 200) {
+                const etsyResponseData = etsyApiResponse.data; // Supondo que a resposta contém os dados desejados
+                response.status(200).json(etsyResponseData);
+            } else {
+                response.status(etsyApiResponse.status).send("Não funcionou");
+            }
+        } catch (error) {
+            console.error(error);
+            response.status(500).send("Não funcionou");
+        }
+    });
+
+    // Rota para pesquisar lojas pelo nome
+    routes.get('/findShops', async (request: Request, response: Response) => {
+        try {
+            // Verifique se o token de acesso está disponível
+            if (!accessToken) {
+                response.status(401).send("Token de acesso não disponível. Realize a autenticação primeiro.");
+                return;
+            }
+
+            const { shop_name, limit = 25, offset = 0 } = request.query;
+
+            const etsyApiResponse = await axios.get(`https://openapi.etsy.com/v3/application/shops?shop_name=${shop_name}&limit=${limit}&offset=${offset}`, { headers: { 'Authorization': `Bearer ${accessToken}` } });
+
+            if (etsyApiResponse.status === 200) {
+                const etsyResponseData = etsyApiResponse.data; // Supondo que a resposta contém os dados desejados
+                response.status(200).json(etsyResponseData);
+            } else {
+                response.status(etsyApiResponse.status).send("Não funcionou");
+            }
+        } catch (error) {
+            console.error(error);
+            response.status(500).send("Não funcionou");
+        }
+    });
+
+    // Rota para obter parceiros de produção de uma loja específica
+    routes.get('/getShopProductionPartners/:shop_id', async (request: Request, response: Response) => {
+        try {
+            // Verifique se o token de acesso está disponível
+            if (!accessToken) {
+                response.status(401).send("Token de acesso não disponível. Realize a autenticação primeiro.");
+                return;
+            }
+
+            const { shop_id } = request.params;
+
+            const etsyApiResponse = await axios.get(`https://openapi.etsy.com/v3/application/shops/${shop_id}/production-partners`, { headers: { 'Authorization': `Bearer ${accessToken}` } });
+
+            if (etsyApiResponse.status === 200) {
+                const etsyResponseData = etsyApiResponse.data; // Supondo que a resposta contém os dados desejados
+                response.status(200).json(etsyResponseData);
+            } else {
+                response.status(etsyApiResponse.status).send("Não funcionou");
+            }
+        } catch (error) {
+            console.error(error);
+            response.status(500).send("Não funcionou");
+        }
+    });
+    routes.post('/createShopSection/:shop_id', async (request: Request, response: Response) => {
+        try {
+            // Verifique se o token de acesso está disponível
+            if (!accessToken) {
+                response.status(401).send("Token de acesso não disponível. Realize a autenticação primeiro.");
+                return;
+            }
+
+            const { shop_id } = request.params;
+            const { title } = request.body;
+
+            const etsyApiResponse = await axios.post(`https://openapi.etsy.com/v3/application/shops/${shop_id}/sections`, { title }, { headers: { 'Authorization': `Bearer ${accessToken}` } });
+
+            if (etsyApiResponse.status === 200) {
+                const etsyResponseData = etsyApiResponse.data; // Supondo que a resposta contém os dados desejados
+                response.status(200).json(etsyResponseData);
+            } else {
+                response.status(etsyApiResponse.status).send("Não funcionou");
+            }
+        } catch (error) {
+            console.error(error);
+            response.status(500).send("Não funcionou");
+        }
+    });
+
+    // Rota para obter a lista de seções de uma loja específica
+    routes.get('/getShopSections/:shop_id', async (request: Request, response: Response) => {
+        try {
+            // Verifique se o token de acesso está disponível
+            if (!accessToken) {
+                response.status(401).send("Token de acesso não disponível. Realize a autenticação primeiro.");
+                return;
+            }
+
+            const { shop_id } = request.params;
+
+            const etsyApiResponse = await axios.get(`https://openapi.etsy.com/v3/application/shops/${shop_id}/sections`, { headers: { 'Authorization': `Bearer ${accessToken}` } });
+
+            if (etsyApiResponse.status === 200) {
+                const etsyResponseData = etsyApiResponse.data; // Supondo que a resposta contém os dados desejados
+                response.status(200).json(etsyResponseData);
+            } else {
+                response.status(etsyApiResponse.status).send("Não funcionou");
+            }
+        } catch (error) {
+            console.error(error);
+            response.status(500).send("Não funcionou");
+        }
+    });
+
+    // Rota para deletar uma seção em uma loja específica
+    routes.delete('/deleteShopSection/:shop_id/:shop_section_id', async (request: Request, response: Response) => {
+        try {
+            // Verifique se o token de acesso está disponível
+            if (!accessToken) {
+                response.status(401).send("Token de acesso não disponível. Realize a autenticação primeiro.");
+                return;
+            }
+
+            const { shop_id, shop_section_id } = request.params;
+
+            const etsyApiResponse = await axios.delete(`https://openapi.etsy.com/v3/application/shops/${shop_id}/sections/${shop_section_id}`, { headers: { 'Authorization': `Bearer ${accessToken}` } });
+
+            if (etsyApiResponse.status === 204) {
+                response.status(204).send("A seção foi deletada com sucesso");
+            } else {
+                response.status(etsyApiResponse.status).send("Não funcionou");
+            }
+        } catch (error) {
+            console.error(error);
+            response.status(500).send("Não funcionou");
+        }
+    });
+
+    // Rota para obter informações sobre uma seção específica de uma loja
+    routes.get('/getShopSection/:shop_id/:shop_section_id', async (request: Request, response: Response) => {
+        try {
+            // Verifique se o token de acesso está disponível
+            if (!accessToken) {
+                response.status(401).send("Token de acesso não disponível. Realize a autenticação primeiro.");
+                return;
+            }
+
+            const { shop_id, shop_section_id } = request.params;
+
+            const etsyApiResponse = await axios.get(`https://openapi.etsy.com/v3/application/shops/${shop_id}/sections/${shop_section_id}`, { headers: { 'Authorization': `Bearer ${accessToken}` } });
+
+            if (etsyApiResponse.status === 200) {
+                const etsyResponseData = etsyApiResponse.data; // Supondo que a resposta contém os dados desejados
+                response.status(200).json(etsyResponseData);
+            } else {
+                response.status(etsyApiResponse.status).send("Não funcionou");
+            }
+        } catch (error) {
+            console.error(error);
+            response.status(500).send("Não funcionou");
+        }
+    });
+
+    // Rota para atualizar uma seção em uma loja específica
+    routes.put('/updateShopSection/:shop_id/:shop_section_id', async (request: Request, response: Response) => {
+        try {
+            // Verifique se o token de acesso está disponível
+            if (!accessToken) {
+                response.status(401).send("Token de acesso não disponível. Realize a autenticação primeiro.");
+                return;
+            }
+
+            const { shop_id, shop_section_id } = request.params;
+            const { title } = request.body;
+
+            const etsyApiResponse = await axios.put(`https://openapi.etsy.com/v3/application/shops/${shop_id}/sections/${shop_section_id}`, { title }, { headers: { 'Authorization': `Bearer ${accessToken}` } });
+
+            if (etsyApiResponse.status === 200) {
+                const etsyResponseData = etsyApiResponse.data; // Supondo que a resposta contém os dados desejados
+                response.status(200).json(etsyResponseData);
+            } else {
+                response.status(etsyApiResponse.status).send("Não funcionou");
+            }
+        } catch (error) {
+            console.error(error);
+            response.status(500).send("Não funcionou");
+        }
+    });
+    routes.get('/getUser/:user_id', async (request: Request, response: Response) => {
+        try {
+            // Verifique se o token de acesso está disponível
+            if (!accessToken) {
+                response.status(401).send("Token de acesso não disponível. Realize a autenticação primeiro.");
+                return;
+            }
+
+            const { user_id } = request.params;
+
+            const etsyApiResponse = await axios.get(`https://openapi.etsy.com/v3/application/users/${user_id}`, { headers: { 'Authorization': `Bearer ${accessToken}` } });
+
+            if (etsyApiResponse.status === 200) {
+                const etsyResponseData = etsyApiResponse.data; // Supondo que a resposta contém os dados desejados
+                response.status(200).json(etsyResponseData);
+            } else {
+                response.status(etsyApiResponse.status).send("Não funcionou");
+            }
+        } catch (error) {
+            console.error(error);
+            response.status(500).send("Não funcionou");
+        }
+    });
+
+    // Rota para obter informações básicas sobre o usuário solicitante
+    routes.get('/me', async (request: Request, response: Response) => {
+        try {
+            // Verifique se o token de acesso está disponível
+            if (!accessToken) {
+                response.status(401).send("Token de acesso não disponível. Realize a autenticação primeiro.");
+                return;
+            }
+
+            const etsyApiResponse = await axios.get('https://openapi.etsy.com/v3/application/users/me', { headers: { 'Authorization': `Bearer ${accessToken}` } });
+
+            if (etsyApiResponse.status === 200) {
+                const etsyResponseData = etsyApiResponse.data; // Supondo que a resposta contém os dados desejados
+                response.status(200).json(etsyResponseData);
+            } else {
+                response.status(etsyApiResponse.status).send("Não funcionou");
+            }
+        } catch (error) {
+            console.error(error);
+            response.status(500).send("Não funcionou");
+        }
+    });
+
+    // Rota para excluir um UserAddress de um usuário
+    routes.delete('/deleteUserAddress/:user_address_id', async (request: Request, response: Response) => {
+        try {
+            // Verifique se o token de acesso está disponível
+            if (!accessToken) {
+                response.status(401).send("Token de acesso não disponível. Realize a autenticação primeiro.");
+                return;
+            }
+
+            const { user_address_id } = request.params;
+
+            const etsyApiResponse = await axios.delete(`https://openapi.etsy.com/v3/application/user/addresses/${user_address_id}`, { headers: { 'Authorization': `Bearer ${accessToken}` } });
+
+            if (etsyApiResponse.status === 204) {
+                response.status(204).send("O endereço do usuário foi excluído com sucesso");
+            } else {
+                response.status(etsyApiResponse.status).send("Não funcionou");
+            }
+        } catch (error) {
+            console.error(error);
+            response.status(500).send("Não funcionou");
+        }
+    });
+
+    // Rota para obter um UserAddress para um usuário
+    routes.get('/getUserAddress/:user_address_id', async (request: Request, response: Response) => {
+        try {
+            // Verifique se o token de acesso está disponível
+            if (!accessToken) {
+                response.status(401).send("Token de acesso não disponível. Realize a autenticação primeiro.");
+                return;
+            }
+
+            const { user_address_id } = request.params;
+
+            const etsyApiResponse = await axios.get(`https://openapi.etsy.com/v3/application/user/addresses/${user_address_id}`, { headers: { 'Authorization': `Bearer ${accessToken}` } });
+
+            if (etsyApiResponse.status === 200) {
+                const etsyResponseData = etsyApiResponse.data; // Supondo que a resposta contém os dados desejados
+                response.status(200).json(etsyResponseData);
+            } else {
+                response.status(etsyApiResponse.status).send("Não funcionou");
+            }
+        } catch (error) {
+            console.error(error);
+            response.status(500).send("Não funcionou");
+        }
+    });
+
+    // Rota para obter UserAddresses para um usuário
+    routes.get('/getUserAddresses', async (request: Request, response: Response) => {
+        try {
+            // Verifique se o token de acesso está disponível
+            if (!accessToken) {
+                response.status(401).send("Token de acesso não disponível. Realize a autenticação primeiro.");
+                return;
+            }
+
+            const etsyApiResponse = await axios.get('https://openapi.etsy.com/v3/application/user/addresses', { headers: { 'Authorization': `Bearer ${accessToken}` } });
+
+            if (etsyApiResponse.status === 200) {
+                const etsyResponseData = etsyApiResponse.data; // Supondo que a resposta contém os dados desejados
+                response.status(200).json(etsyResponseData);
+            } else {
+                response.status(etsyApiResponse.status).send("Não funcionou");
+            }
+        } catch (error) {
+            console.error(error);
+            response.status(500).send("Não funcionou");
+        }
+    });
 };
