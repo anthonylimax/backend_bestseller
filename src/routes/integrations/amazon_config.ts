@@ -931,6 +931,34 @@ routes.get('/catalog/2022-04-01/items', async (request: Request, response: Respo
       });
     }
   });
-  
+  // Rota para pesquisar itens no catálogo da Amazon
+  routes.get('/v1/amazon/catalog/items', async (request: Request, response: Response) => {
+    try {
+        const apiResponse = await axios.get(`${amazonApiEndpoint}/catalog/2022-04-01/items`, {
+            params: request.query,
+        });
+
+        response.json(apiResponse.data);
+    } catch (error) {
+        console.error(error);
+        response.status(500).send("Falha ao pesquisar itens no catálogo da Amazon");
+    }
+});
+
+// Rota para obter detalhes de um item no catálogo da Amazon
+routes.get('/v1/amazon/catalog/items/:asin', async (request: Request, response: Response) => {
+    try {
+        const { asin } = request.params;
+        const apiResponse = await axios.get(`${amazonApiEndpoint}/catalog/2022-04-01/items/${asin}`, {
+            params: request.query,
+        });
+
+        response.json(apiResponse.data);
+    } catch (error) {
+        console.error(error);
+        response.status(500).send("Falha ao obter detalhes do item no catálogo da Amazon");
+    }
+});
+
 };
 // ... (código posterior)
